@@ -19,7 +19,7 @@ services:
     image: prom/prometheus:v2.35.0
     container_name: prometheus
     volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./prometheus-with-cadvisor.yaml:/etc/prometheus/prometheus.yaml
       - ./prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yaml"
@@ -48,3 +48,15 @@ services:
       - renderer
     ports:
       - "3007:3000"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8884:8080" # cAdvisor 預設埠號
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
